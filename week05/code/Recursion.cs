@@ -44,19 +44,21 @@ public static int SumSquaresRecursive(int n)
     /// </summary>
 public static void PermutationsChoose(List<string> results, string letters, int size, string word = "")
 {
-    // Base Case: When word reaches the desired size
+    // Base Case: When the word reaches the desired size
     if (word.Length == size)
     {
         results.Add(word);
         return;
     }
 
-    // Recursive Case: Append each letter and recurse
+    // Recursive Case: Append each unused letter and recurse
     foreach (char letter in letters)
     {
-        PermutationsChoose(results, letters, size, word + letter);
+        string remainingLetters = letters.Replace(letter.ToString(), "");
+        PermutationsChoose(results, remainingLetters, size, word + letter);
     }
 }
+
 
 
     /// <summary>
@@ -160,66 +162,43 @@ public static void PermutationsChoose(List<string> results, string letters, int 
     /// Use recursion to insert all paths that start at (0,0) and end at the
     /// 'end' square into the results list.
     /// </summary>
-    public static void SolveMaze(List<string> results, Maze maze, int x = 0, int y = 0, List<ValueTuple<int, int>>? currPath = null)
-    {
-        // If this is the first time running the function, then we need
-        // to initialize the currPath list.
-        if (currPath == null) {
-            currPath = new List<ValueTuple<int, int>>();
-        }}
-        
-        // currPath.Add((1,2)); // Use this syntax to add to the current path
-
-        // TODO Start Problem 5
-public static class ExecuteRecursion
+ public static void SolveMaze(List<string> results, Maze maze, int x = 0, int y = 0, List<(int, int)>? currPath = null)
 {
-    /// <summary>
-    /// SolveMaze: Entry point that initializes the results list and starts the recursion.
-    /// </summary>
-    public static void SolveMaze(List<string> results, Maze maze)
+    // Initialize path on first call
+    if (currPath == null)
     {
-        // Start the recursive function with an empty path
-        SolveMazeRecursive(results, maze, 0, 0, new List<(int, int)>());
+        currPath = new List<(int, int)>();
     }
 
-    /// <summary>
-    /// SolveMazeRecursive: A recursive method to explore all paths in the maze.
-    /// </summary>
-    private static void SolveMazeRecursive(List<string> results, Maze maze, int x, int y, List<(int, int)> currPath)
+    // Add current position to path
+    currPath.Add((x, y));
+
+    // Base Case: If we reach the end of the maze, add the path to results
+    if (maze.IsEnd(x, y))
     {
-        // Add the current position to the path
-        currPath.Add((x, y));
-
-        // Check if we have reached the end
-        if (maze.IsEnd(x, y))
-        {
-            // Convert the path to a string using the provided AsString method and add it to the results
-            results.Add(currPath.AsString());
-            currPath.RemoveAt(currPath.Count - 1); // Backtrack
-            return;
-        }
-
-        // Explore possible moves: right, down, left, up
-        int[] dx = { 1, 0, -1, 0 }; // Movement in X direction
-        int[] dy = { 0, 1, 0, -1 }; // Movement in Y direction
-
-        for (int i = 0; i < 4; i++)
-        {
-            int newX = x + dx[i];
-            int newY = y + dy[i];
-
-            // Check if the move is valid
-            if (maze.IsValidMove(currPath, newX, newY))
-            {
-                SolveMazeRecursive(results, maze, newX, newY, currPath);
-            }
-        }
-
-        // Backtrack: Remove the last position from the path
-        currPath.RemoveAt(currPath.Count - 1);
+        results.Add(currPath.AsString());
+        currPath.RemoveAt(currPath.Count - 1); // Backtrack
+        return;
     }
+
+    // Explore possible moves: right, down, left, up
+    int[] dx = { 1, 0, -1, 0 }; // X direction
+    int[] dy = { 0, 1, 0, -1 }; // Y direction
+
+    for (int i = 0; i < 4; i++)
+    {
+        int newX = x + dx[i];
+        int newY = y + dy[i];
+
+        // Check if the move is valid and not revisited
+        if (maze.IsValidMove(currPath, newX, newY))
+        {
+            SolveMaze(results, maze, newX, newY, currPath);
+        }
+    }
+
+    // Backtrack: Remove the last position from the path
+    currPath.RemoveAt(currPath.Count - 1);
 }
 
-
-        // results.Add(currPath.AsString()); // Use this to add your path to the results array keeping track of complete maze solutions when you find the solution.
-    }
+}
