@@ -39,4 +39,5 @@ public class Translator
         Console.WriteLine(englishToGerman.Translate("Plane")); // Flugzeug
         Console.WriteLine(englishToGerman.Translate("Train")); // ???
     }
+    
 }
